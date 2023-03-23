@@ -13,6 +13,9 @@ public class Graph {
             synsetID = id;
             synsetChildren = children;
         }
+        public ArrayList<Node> getSynsetChildren() {
+            return synsetChildren;
+        }
     }
 
     // Instance variables
@@ -54,6 +57,20 @@ public class Graph {
                     List<Integer> tempList = new ArrayList<>();
                     tempList.add(Integer.parseInt(currentLine[0]));
                     wordIDMap.put(word, tempList);
+                }
+            }
+        }
+    }
+
+    public ArrayList<String> getHyponyms(String word) {
+        ArrayList<String> hyponyms = new ArrayList<>();
+        for (String wordKey : wordIDMap.keySet()) {
+            if (wordKey.equals(word)) {
+                List<Integer> synsets = wordIDMap.get(wordKey);
+                for (int synset : synsets) {
+                    // for some reason I thought the words were stored as nodes, so it 'd be easy to find the children
+                    // since it isn't I'm gonna have to think about this again (I'll be back)
+                    List<String> synsetWords = synsetToWords.get(synset);
                 }
             }
         }
