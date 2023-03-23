@@ -8,12 +8,12 @@ import java.util.*;
 public class Graph {
     private class Node {
         private static int synsetID;
-        private ArrayList<Node> synsetChildren;
-        public Node(int id, ArrayList<Node> children) {
+        private List<Node> synsetChildren;
+        public Node(int id, List<Node> children) {
             synsetID = id;
             synsetChildren = children;
         }
-        public ArrayList<Node> getSynsetChildren() {
+        public List<Node> getSynsetChildren() {
             return synsetChildren;
         }
     }
@@ -21,7 +21,7 @@ public class Graph {
     // Instance variables
     public String synsetFilePath = "./data/wordnet/synsets14.txt";
     public Map<String, List<Integer>> wordIDMap;
-    public Map<Integer, List<String>> synsetToWords;
+    public Map<Integer, List<Node>> synsetToWords;
     public String hyponymFilePath;
     public NGramMap ngm;
 
@@ -43,7 +43,7 @@ public class Graph {
              */
             String[] words = currentLine[1].split(" ");
             // adds synset id mapped to list of the words it represents.
-            synsetToWords.put(Integer.parseInt(currentLine[0]), Arrays.asList(words));
+            synsetToWords.put(Integer.parseInt(currentLine[0]), Arrays.asList(words)); // having a hard time doing this in node form
             /* iterates over the string array.
             if the word is in the map already, it gets the value associated with that word (a list), and adds the 0th
             index of the currentLine (the synsetid number) to the list
@@ -68,11 +68,17 @@ public class Graph {
             if (wordKey.equals(word)) {
                 List<Integer> synsets = wordIDMap.get(wordKey);
                 for (int synset : synsets) {
-                    // for some reason I thought the words were stored as nodes, so it 'd be easy to find the children
-                    // since it isn't I'm gonna have to think about this again (I'll be back)
-                    List<String> synsetWords = synsetToWords.get(synset);
+                    List<Node> synsetWords = synsetToWords.get(synset);
+                    for (Node currWord : synsetWords) {
+                        if (currWord.equals(word)) { //ok I know this isn't right, but I'm getting tired, gotta look tomorrow
+                            for (String child : currWord.getSynsetChildren()) { // obviously this is wrong too, tomorrow I'll add a way to get the name from the node
+                                hyponyms.add(child);
+                            }
+                        }
+                    }
                 }
             }
         }
+        return hyponyms;
     }
 }
