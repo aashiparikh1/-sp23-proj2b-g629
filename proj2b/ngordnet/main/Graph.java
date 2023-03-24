@@ -8,18 +8,18 @@ import java.util.*;
 public class Graph {
     private class Node {
         private static int synsetID;
-        private String word;
+        private List<String> words;
         private List<Node> synsetChildren;
-        public Node(int id, String thisWord, List<Node> children) {
+        public Node(int id, List<String> words) {
             synsetID = id;
-            word = thisWord;
-            synsetChildren = children;
+            this.words = words;
+            synsetChildren = new ArrayList<>();
         }
         public List<Node> getSynsetChildren() {
             return synsetChildren;
         }
-        public String getWord() {
-            return word;
+        public List<String> getWord() {
+            return words;
         }
     }
 
@@ -27,6 +27,7 @@ public class Graph {
     public String synsetFilePath = "./data/wordnet/synsets14.txt";
     public Map<String, List<Integer>> wordIDMap;
     public Map<Integer, Node> synsetToNode;
+    public Map<Integer, List<String>> synsetToWord;
     public String hyponymFilePath;
     public NGramMap ngm;
 
@@ -34,6 +35,31 @@ public class Graph {
         wordIDMap = new HashMap<>();
         synsetToNode = new HashMap<>();
         synsetInput(synsetFilePath);
+        hyponymInput(hyponymFilePath);
+    }
+
+    // this function also constructs the tree structure
+    public void hyponymInput (String path) {
+        In hyponymsIn = new In(path);
+        while (hyponymsIn.hasNextLine()) {
+            String[] currentLine = hyponymsIn.readLine().split(",");
+            //creates a list of strings of the contents of the line starting from index 1 (skipping the first item)
+            List<String> childrenStrings = Arrays.asList(Arrays.copyOfRange(currentLine, 1, currentLine.length));
+            //code to convert it to a list of ints
+            List<Integer> childrenInt = new ArrayList<>();
+            for (String s : childrenStrings) {
+                childrenInt.add(Integer.parseInt(s));
+            }
+
+            if (synsetToNode.containsKey(currentLine[0])) {
+                for (String s : childrenStrings) {
+                    int id = Integer.parseInt(s);
+                    Node child = new Node(id, synsetToWord.get(id));
+                    synsetToNode.get(currentLine[0]).synsetChildren.add(child);
+                }
+            }
+        }
+
     }
 
     // Takes in the file path specified in instance variables
@@ -47,8 +73,11 @@ public class Graph {
             string array
              */
             String[] words = currentLine[1].split(" "); // need some code to turn each word into a node object
-            // adds synset id mapped to list of the words it represents.
-          //TODO  synsetToNode.put(Integer.parseInt(currentLine[0]), Arrays.asList(words));
+
+            synsetToNode.put(Integer.parseInt(currentLine[0]), new Node(Integer.parseInt(currentLine[0]), Arrays.asList(words)));
+
+            // adds synset id mapped to list of the words it represents. (necessary for creating hierarchy in hyponym method)
+            synsetToWord.put(Integer.parseInt(currentLine[0]), Arrays.asList(words));
             /* iterates over the string array.
             if the word is in the map already, it gets the value associated with that word (a list), and adds the 0th
             index of the currentLine (the synsetid number) to the list
@@ -70,7 +99,7 @@ public class Graph {
     public List<String> hyponymHelper (Node n) {
         List<String> tempList = new ArrayList<>();
         if (n != null) {
-            tempList.add(n.word);
+            tempList.addAll(n.words);
             for (Node s : n.synsetChildren) {
                 tempList.addAll(hyponymHelper(s));
             }
@@ -78,7 +107,7 @@ public class Graph {
         return tempList;
     }
 
-    public ArrayList<String> getHyponyms(String word) {
+    public ArrayList<String> getHyponyms (String word) {
         ArrayList<String> hyponyms = new ArrayList<>();
         if (wordIDMap.containsKey(word)) {
             List<Integer> synsets = wordIDMap.get(word);
