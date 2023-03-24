@@ -26,13 +26,13 @@ public class Graph {
     // Instance variables
     public String synsetFilePath = "./data/wordnet/synsets14.txt";
     public Map<String, List<Integer>> wordIDMap;
-    public Map<Integer, List<Node>> synsetToWords;
+    public Map<Integer, Node> synsetToNode;
     public String hyponymFilePath;
     public NGramMap ngm;
 
     public Graph () {
         wordIDMap = new HashMap<>();
-        synsetToWords = new HashMap<>();
+        synsetToNode = new HashMap<>();
         synsetInput(synsetFilePath);
     }
 
@@ -48,7 +48,7 @@ public class Graph {
              */
             String[] words = currentLine[1].split(" "); // need some code to turn each word into a node object
             // adds synset id mapped to list of the words it represents.
-            synsetToWords.put(Integer.parseInt(currentLine[0]), Arrays.asList(words));
+          //TODO  synsetToNode.put(Integer.parseInt(currentLine[0]), Arrays.asList(words));
             /* iterates over the string array.
             if the word is in the map already, it gets the value associated with that word (a list), and adds the 0th
             index of the currentLine (the synsetid number) to the list
@@ -67,13 +67,31 @@ public class Graph {
         }
     }
 
+    public List<String> hyponymHelper (Node n) {
+        List<String> tempList = new ArrayList<>();
+        if (n != null) {
+            tempList.add(n.word);
+            for (Node s : n.synsetChildren) {
+                tempList.addAll(hyponymHelper(s));
+            }
+        }
+        return tempList;
+    }
+
     public ArrayList<String> getHyponyms(String word) {
         ArrayList<String> hyponyms = new ArrayList<>();
+        if (wordIDMap.containsKey(word)) {
+            List<Integer> synsets = wordIDMap.get(word);
+            for (int synset : synsets) {
+                hyponyms.addAll(hyponymHelper(synsetToNode.get(synset)));
+            }
+        }
+        /*
         for (String wordKey : wordIDMap.keySet()) {
             if (wordKey.equals(word)) {
                 List<Integer> synsets = wordIDMap.get(wordKey);
                 for (int synset : synsets) {
-                    List<Node> synsetWords = synsetToWords.get(synset);
+                    List<Node> synsetWords = synsetToNode.get(synset);
                     for (Node currWord : synsetWords) {
                         if (currWord.getWord().equals(word)) {
                             for (Node child : currWord.getSynsetChildren()) {
@@ -84,6 +102,8 @@ public class Graph {
                 }
             }
         }
+
+         */
         return hyponyms;
     }
 }
