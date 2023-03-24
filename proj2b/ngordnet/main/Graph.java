@@ -8,13 +8,18 @@ import java.util.*;
 public class Graph {
     private class Node {
         private static int synsetID;
+        private String word;
         private List<Node> synsetChildren;
-        public Node(int id, List<Node> children) {
+        public Node(int id, String thisWord, List<Node> children) {
             synsetID = id;
+            word = thisWord;
             synsetChildren = children;
         }
         public List<Node> getSynsetChildren() {
             return synsetChildren;
+        }
+        public String getWord() {
+            return word;
         }
     }
 
@@ -41,9 +46,9 @@ public class Graph {
             1st index item in string away is the words of the synset, so it splits that by spaces, and puts it into a new
             string array
              */
-            String[] words = currentLine[1].split(" ");
+            String[] words = currentLine[1].split(" "); // need some code to turn each word into a node object
             // adds synset id mapped to list of the words it represents.
-            synsetToWords.put(Integer.parseInt(currentLine[0]), Arrays.asList(words)); // having a hard time doing this in node form
+            synsetToWords.put(Integer.parseInt(currentLine[0]), Arrays.asList(words));
             /* iterates over the string array.
             if the word is in the map already, it gets the value associated with that word (a list), and adds the 0th
             index of the currentLine (the synsetid number) to the list
@@ -70,9 +75,9 @@ public class Graph {
                 for (int synset : synsets) {
                     List<Node> synsetWords = synsetToWords.get(synset);
                     for (Node currWord : synsetWords) {
-                        if (currWord.equals(word)) { //ok I know this isn't right, but I'm getting tired, gotta look tomorrow
-                            for (String child : currWord.getSynsetChildren()) { // obviously this is wrong too, tomorrow I'll add a way to get the name from the node
-                                hyponyms.add(child);
+                        if (currWord.getWord().equals(word)) {
+                            for (Node child : currWord.getSynsetChildren()) {
+                                hyponyms.add(child.getWord());
                             }
                         }
                     }
