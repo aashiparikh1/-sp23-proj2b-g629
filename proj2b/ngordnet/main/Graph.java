@@ -97,19 +97,20 @@ public class Graph {
         }
     }
 
-    public List<String> hyponymHelper (Node n) {
-        List<String> tempList = new ArrayList<>();
+
+    public Set<String> hyponymHelper (Node n) {
+        Set<String> tempSet = new TreeSet<>();
         if (n != null) {
-            tempList.addAll(n.words);
+            tempSet.addAll(n.words);
             for (Node s : n.synsetChildren) {
-                tempList.addAll(hyponymHelper(s));
+                tempSet.addAll(hyponymHelper(s));
             }
         }
-        return tempList;
+        return tempSet;
     }
 
-    public ArrayList<String> getHyponyms (String word) {
-        ArrayList<String> hyponyms = new ArrayList<>();
+    public List<String> getHyponyms (String word) {
+        Set<String> hyponyms = new TreeSet();
         if (wordIDMap.containsKey(word)) {
             List<Integer> synsets = wordIDMap.get(word);
             for (int synset : synsets) {
@@ -134,7 +135,7 @@ public class Graph {
         }
 
          */
-        return hyponyms;
+        return List.copyOf(hyponyms);
     }
 
     public static void main (String[] args) {
