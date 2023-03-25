@@ -24,16 +24,17 @@ public class Graph {
     }
 
     // Instance variables
-    public String synsetFilePath = "./data/wordnet/synsets14.txt";
+    public String synsetFilePath = "./data/wordnet/synsets16.txt";
     public Map<String, List<Integer>> wordIDMap;
     public Map<Integer, Node> synsetToNode;
     public Map<Integer, List<String>> synsetToWord;
-    public String hyponymFilePath;
+    public String hyponymFilePath = "./data/wordnet/hyponyms16.txt";
     public NGramMap ngm;
 
     public Graph () {
         wordIDMap = new HashMap<>();
         synsetToNode = new HashMap<>();
+        synsetToWord = new HashMap<>();
         synsetInput(synsetFilePath);
         hyponymInput(hyponymFilePath);
     }
@@ -51,11 +52,11 @@ public class Graph {
                 childrenInt.add(Integer.parseInt(s));
             }
 
-            if (synsetToNode.containsKey(currentLine[0])) {
+            if (synsetToNode.containsKey(Integer.parseInt(currentLine[0]))) {
                 for (String s : childrenStrings) {
                     int id = Integer.parseInt(s);
                     Node child = new Node(id, synsetToWord.get(id));
-                    synsetToNode.get(currentLine[0]).synsetChildren.add(child);
+                    synsetToNode.get(Integer.parseInt(currentLine[0])).synsetChildren.add(child);
                 }
             }
         }
@@ -72,7 +73,7 @@ public class Graph {
             1st index item in string away is the words of the synset, so it splits that by spaces, and puts it into a new
             string array
              */
-            String[] words = currentLine[1].split(" "); // need some code to turn each word into a node object
+            String[] words = currentLine[1].split(" ");
 
             synsetToNode.put(Integer.parseInt(currentLine[0]), new Node(Integer.parseInt(currentLine[0]), Arrays.asList(words)));
 
@@ -134,5 +135,10 @@ public class Graph {
 
          */
         return hyponyms;
+    }
+
+    public static void main (String[] args) {
+        Graph testGraph = new Graph();
+        System.out.println(testGraph.getHyponyms("change"));
     }
 }
