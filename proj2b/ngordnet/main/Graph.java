@@ -126,10 +126,20 @@ public class Graph {
 
     public List<String> getHyponymsMultipleWords (List<String> words) {
         Set<String> hyponyms = new TreeSet<>();
+        Map<String, Integer> hyponymFreq = new TreeMap<>();
         for (String word : words) {
-            List<String> wordHyponyms = getHyponyms(word);
-            for (String hyponym : wordHyponyms) {
-                hyponyms.add(hyponym);
+            List<String> curr_hyponyms = getHyponyms(word);
+            for (String hyponym : curr_hyponyms) {
+                if (!hyponymFreq.containsKey(hyponym)) {
+                    hyponymFreq.put(hyponym, 1);
+                } else {
+                    hyponymFreq.replace(hyponym, hyponymFreq.get(hyponym), hyponymFreq.get(hyponym) + 1);
+                }
+            }
+        }
+        for (String key : hyponymFreq.keySet()) {
+            if (hyponymFreq.get(key) == words.size()) {
+                hyponyms.add(key);
             }
         }
         return List.copyOf(hyponyms);
@@ -138,9 +148,9 @@ public class Graph {
         Graph testGraph = new Graph();
         List<String> testList = new ArrayList<>();
         testList.add("change");
-        testList.add("event");
+        testList.add("occurrence");
         System.out.println(testGraph.getHyponymsMultipleWords(testList));
         System.out.println(testGraph.getHyponyms("change"));
-        System.out.println(testGraph.getHyponyms("event"));
+        System.out.println(testGraph.getHyponyms("occurrence"));
     }
 }
