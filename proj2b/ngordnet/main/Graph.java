@@ -18,20 +18,20 @@ public class Graph {
         public List<Node> getSynsetChildren() {
             return synsetChildren;
         }
-        public List<String> getWord() {
+        public List<String> getWords() {
             return words;
         }
     }
 
     // Instance variables
-    public String synsetFilePath = "./data/wordnet/synsets16.txt";
+    // public String synsetFilePath = "./data/wordnet/synsets.txt";
     public Map<String, List<Integer>> wordIDMap;
     public Map<Integer, Node> synsetToNode;
     public Map<Integer, List<String>> synsetToWord;
-    public String hyponymFilePath = "./data/wordnet/hyponyms16.txt";
-    public NGramMap ngm;
+    // public String hyponymFilePath = "./data/wordnet/hyponyms.txt";
+    // public NGramMap ngm;
 
-    public Graph () {
+    public Graph (String synsetFilePath, String hyponymFilePath) {
         wordIDMap = new HashMap<>();
         synsetToNode = new HashMap<>();
         synsetToWord = new HashMap<>();
@@ -60,7 +60,7 @@ public class Graph {
                     } else {
                         child = synsetToNode.get(i);
                     }
-                    synsetToNode.get(Integer.parseInt(currentLine[0])).synsetChildren.add(child);
+                    synsetToNode.get(Integer.parseInt(currentLine[0])).getSynsetChildren().add(child);
                 }
             }
         }
@@ -105,8 +105,8 @@ public class Graph {
     public Set<String> hyponymHelper (Node n) {
         Set<String> tempSet = new TreeSet<>();
         if (n != null) {
-            tempSet.addAll(n.words);
-            for (Node s : n.synsetChildren) {
+            tempSet.addAll(n.getWords());
+            for (Node s : n.getSynsetChildren()) {
                 tempSet.addAll(hyponymHelper(s));
             }
         }
@@ -145,12 +145,12 @@ public class Graph {
         return List.copyOf(hyponyms);
     }
     public static void main (String[] args) {
-        Graph testGraph = new Graph();
+        Graph testGraph = new Graph("./data/wordnet/synsets.txt", "./data/wordnet/hyponyms.txt");
         List<String> testList = new ArrayList<>();
-        testList.add("change");
-        testList.add("occurrence");
+        testList.add("tart");
+        testList.add("pastry");
         System.out.println(testGraph.getHyponymsMultipleWords(testList));
-        System.out.println(testGraph.getHyponyms("change"));
-        System.out.println(testGraph.getHyponyms("occurrence"));
+        //System.out.println(testGraph.getHyponyms("video"));
+        //System.out.println(testGraph.getHyponyms("recording"));
     }
 }
