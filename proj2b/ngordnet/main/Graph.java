@@ -53,13 +53,12 @@ public class Graph {
             }
 
             if (synsetToNode.containsKey(Integer.parseInt(currentLine[0]))) {
-                for (String s : childrenStrings) {
-                    int childID = Integer.parseInt(s);
+                for (int i : childrenInt) {
                     Node child;
-                    if (!synsetToNode.containsKey(childID)) {
-                        child = new Node(childID, synsetToWord.get(childID));
+                    if (!synsetToNode.containsKey(i)) {
+                        child = new Node(i, synsetToWord.get(i));
                     } else {
-                        child = synsetToNode.get(childID);
+                        child = synsetToNode.get(i);
                     }
                     synsetToNode.get(Integer.parseInt(currentLine[0])).synsetChildren.add(child);
                 }
@@ -145,6 +144,6 @@ public class Graph {
 
     public static void main (String[] args) {
         Graph testGraph = new Graph();
-        System.out.println(testGraph.getHyponyms("event"));
+        System.out.println(testGraph.getHyponyms("change"));
     }
 }
