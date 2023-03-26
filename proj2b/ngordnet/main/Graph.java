@@ -125,18 +125,26 @@ public class Graph {
     }
 
     public List<String> getHyponymsMultipleWords (List<String> words) {
+        // this hyponyms set later gets converted to a list and is what is ultimately returned
         Set<String> hyponyms = new TreeSet<>();
+        // hyponymFreq maps each hyponym (of each word in words) to an int frequency value so we know how many times
+        // that hyponym shows up among all the words
         Map<String, Integer> hyponymFreq = new TreeMap<>();
         for (String word : words) {
+            // list of all the hyponyms of the current word
             List<String> curr_hyponyms = getHyponyms(word);
             for (String hyponym : curr_hyponyms) {
+                // if the current hyponym doesn't exist in the hyponymFreq map, add it and set the frequency value to 1
                 if (!hyponymFreq.containsKey(hyponym)) {
                     hyponymFreq.put(hyponym, 1);
+                // otherwise, increase the frequency value for current hyponym by 1
                 } else {
                     hyponymFreq.replace(hyponym, hyponymFreq.get(hyponym), hyponymFreq.get(hyponym) + 1);
                 }
             }
         }
+        // to the final hyponyms set, add only the hyponyms with frequency = size of words list (meaning they're
+        // found in all words' hyponym lists)
         for (String key : hyponymFreq.keySet()) {
             if (hyponymFreq.get(key) == words.size()) {
                 hyponyms.add(key);
