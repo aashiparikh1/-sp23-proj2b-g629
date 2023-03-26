@@ -121,29 +121,26 @@ public class Graph {
                 hyponyms.addAll(hyponymHelper(synsetToNode.get(synset)));
             }
         }
-        /*
-        for (String wordKey : wordIDMap.keySet()) {
-            if (wordKey.equals(word)) {
-                List<Integer> synsets = wordIDMap.get(wordKey);
-                for (int synset : synsets) {
-                    List<Node> synsetWords = synsetToNode.get(synset);
-                    for (Node currWord : synsetWords) {
-                        if (currWord.getWord().equals(word)) {
-                            for (Node child : currWord.getSynsetChildren()) {
-                                hyponyms.add(child.getWord());
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-         */
         return List.copyOf(hyponyms);
     }
 
+    public List<String> getHyponymsMultipleWords (List<String> words) {
+        Set<String> hyponyms = new TreeSet<>();
+        for (String word : words) {
+            List<String> wordHyponyms = getHyponyms(word);
+            for (String hyponym : wordHyponyms) {
+                hyponyms.add(hyponym);
+            }
+        }
+        return List.copyOf(hyponyms);
+    }
     public static void main (String[] args) {
         Graph testGraph = new Graph();
+        List<String> testList = new ArrayList<>();
+        testList.add("change");
+        testList.add("event");
+        System.out.println(testGraph.getHyponymsMultipleWords(testList));
         System.out.println(testGraph.getHyponyms("change"));
+        System.out.println(testGraph.getHyponyms("event"));
     }
 }
