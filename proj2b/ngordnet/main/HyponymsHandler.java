@@ -6,12 +6,12 @@ import ngordnet.ngrams.NGramMap;
 
 import java.util.List;
 
-public class HyponymHandler extends NgordnetQueryHandler {
+public class HyponymsHandler extends NgordnetQueryHandler {
     NGramMap ngm;
     String synsetFile;
     String hyponymFile;
     Graph testGraph;
-    public HyponymHandler(NGramMap ngm, String synsetFile, String hyponymFile) {
+    public HyponymsHandler(NGramMap ngm, String synsetFile, String hyponymFile) {
         this.ngm = ngm;
         this.synsetFile = synsetFile;
         this.hyponymFile = hyponymFile;
