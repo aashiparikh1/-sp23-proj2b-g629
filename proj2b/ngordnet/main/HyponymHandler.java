@@ -11,7 +11,7 @@ public class HyponymHandler extends NgordnetQueryHandler {
     String synsetFile;
     String hyponymFile;
     Graph testGraph;
-    public HyponymHandler (NGramMap ngm, String synsetFile, String hyponymFile) {
+    public HyponymHandler(NGramMap ngm, String synsetFile, String hyponymFile) {
         this.ngm = ngm;
         this.synsetFile = synsetFile;
         this.hyponymFile = hyponymFile;
