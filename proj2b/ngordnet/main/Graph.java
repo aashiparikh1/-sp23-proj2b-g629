@@ -159,15 +159,15 @@ public class Graph {
     }
 
     public List<String> getHyponymsK (List<String> words, int k, int startYear, int endYear) {
-        Map<String, Integer> freqMap = new TreeMap<>();
+        Map<String, Double> freqMap = new TreeMap<>();
         List<String> hyponyms = getHyponymsMultipleWords(words);
         String leastCommonWord = "";
 
         for (String word : hyponyms) {
             List<Double> data = ngm.countHistory(word, startYear, endYear).data();
-            int totalFreq = 0;
+            double totalFreq = 0;
             for (double i : data) {
-                totalFreq += (int) i;
+                totalFreq += i;
             }
             if (totalFreq != 0) {
                 freqMap.put(word, totalFreq);
