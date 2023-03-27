@@ -10,11 +10,14 @@ public class HyponymHandler extends NgordnetQueryHandler {
     NGramMap ngm;
     String synsetFile;
     String hyponymFile;
+    Graph testGraph;
     public HyponymHandler (NGramMap ngm, String synsetFile, String hyponymFile) {
         this.ngm = ngm;
         this.synsetFile = synsetFile;
         this.hyponymFile = hyponymFile;
+        testGraph = new Graph(synsetFile, hyponymFile, ngm);
     }
+
     @Override
     public String handle(NgordnetQuery q) {
         List<String> wordList = q.words();
@@ -22,8 +25,10 @@ public class HyponymHandler extends NgordnetQueryHandler {
         int startYear = q.startYear();
         int k = q.k();
 
-        Graph testGraph = new Graph(synsetFile, hyponymFile);
-        System.out.println(testGraph.getHyponymsMultipleWords(wordList));
-        return testGraph.getHyponymsMultipleWords(wordList).toString();
+        if (k == 0) {
+            return testGraph.getHyponymsMultipleWords(wordList).toString();
+        } else {
+            return testGraph.getHyponymsK(wordList, k, startYear, endYear).toString();
+        }
     }
 }

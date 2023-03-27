@@ -29,12 +29,14 @@ public class Graph {
     public Map<Integer, Node> synsetToNode;
     public Map<Integer, List<String>> synsetToWord;
     // public String hyponymFilePath = "./data/wordnet/hyponyms.txt";
-    // public NGramMap ngm;
+    public NGramMap ngm;
 
-    public Graph (String synsetFilePath, String hyponymFilePath) {
+    public Graph (String synsetFilePath, String hyponymFilePath, NGramMap ngm) {
         wordIDMap = new HashMap<>();
         synsetToNode = new HashMap<>();
         synsetToWord = new HashMap<>();
+        this.ngm = ngm;
+
         synsetInput(synsetFilePath);
         hyponymInput(hyponymFilePath);
     }
@@ -133,6 +135,9 @@ public class Graph {
         for (String word : words) {
             // list of all the hyponyms of the current word
             List<String> curr_hyponyms = getHyponyms(word);
+            if (words.size() == 1) {
+                return curr_hyponyms;
+            }
             for (String hyponym : curr_hyponyms) {
                 // if the current hyponym doesn't exist in the hyponymFreq map, add it and set the frequency value to 1
                 if (!hyponymFreq.containsKey(hyponym)) {
@@ -152,12 +157,45 @@ public class Graph {
         }
         return List.copyOf(hyponyms);
     }
+
+    public List<String> getHyponymsK (List<String> words, int k, int startYear, int endYear) {
+        Map<String, Integer> freqMap = new TreeMap<>();
+        List<String> hyponyms = getHyponymsMultipleWords(words);
+        String leastCommonWord = "";
+
+        for (String word : hyponyms) {
+            List<Double> data = ngm.countHistory(word, startYear, endYear).data();
+            int totalFreq = 0;
+            for (double i : data) {
+                totalFreq += (int) i;
+            }
+            if (totalFreq != 0) {
+                freqMap.put(word, totalFreq);
+                if (freqMap.size() > k) {
+                    List<String> keyList = List.copyOf(freqMap.keySet());
+                    leastCommonWord = keyList.get(0);
+                    for (String key : keyList) {
+                        if (freqMap.get(key) < freqMap.get(leastCommonWord)) {
+                            leastCommonWord = key;
+                        }
+                    }
+                    freqMap.remove(leastCommonWord);
+                }
+            }
+        }
+        return List.copyOf(freqMap.keySet());
+    }
+
+    //changed arguments for graph class so commented out your code. I think we can test from hyponymHandler class now.
     public static void main (String[] args) {
-        Graph testGraph = new Graph("./data/wordnet/synsets.txt", "./data/wordnet/hyponyms.txt");
+        /*
+        Graph testGraph = new Graph("./data/wordnet/synsets.txt", "./data/wordnet/hyponyms.txt);
         List<String> testList = new ArrayList<>();
         testList.add("tart");
         testList.add("pastry");
         System.out.println(testGraph.getHyponymsMultipleWords(testList));
+
+         */
         //System.out.println(testGraph.getHyponyms("video"));
         //System.out.println(testGraph.getHyponyms("recording"));
     }
